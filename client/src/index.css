@@ -195,6 +195,38 @@ input::placeholder {
   gap: 0.5rem;
 }
 
+.home-link {
+  align-self: center;
+  margin-top: -0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.home-link:hover {
+  background: transparent;
+  text-decoration: underline;
+}
+
+.home-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: -0.75rem;
+}
+
+.home-error {
+  font-size: 0.85rem;
+  color: var(--danger);
+  text-align: left;
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
 .home-input {
   position: relative;
   flex: 1;

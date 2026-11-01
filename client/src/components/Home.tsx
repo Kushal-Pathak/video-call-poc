@@ -1,14 +1,37 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{3,32}$/;
+
 function Home() {
   const [roomId, setRoomId] = useState("");
+  const [customRoomId, setCustomRoomId] = useState("");
+  const [showCustom, setShowCustom] = useState(false);
+  const [customError, setCustomError] = useState("");
   const navigate = useNavigate();
 
   const createRoom = () => {
     const newRoomId = crypto.randomUUID().slice(0, 8);
 
     navigate(`/room/${newRoomId}`);
+  };
+
+  const createCustomRoom = () => {
+    const trimmed = customRoomId.trim();
+
+    if (!trimmed) {
+      setCustomError("Enter a room ID.");
+      return;
+    }
+
+    if (!ROOM_ID_PATTERN.test(trimmed)) {
+      setCustomError(
+        "Use 3 to 32 letters, numbers, hyphens or underscores.",
+      );
+      return;
+    }
+
+    navigate(`/room/${trimmed}`);
   };
 
   const joinRoom = () => {
@@ -47,6 +70,40 @@ function Home() {
         <button className="btn-primary" onClick={createRoom}>
           Create Room
         </button>
+
+        <button
+          type="button"
+          className="home-link"
+          onClick={() => setShowCustom((value) => !value)}
+          aria-expanded={showCustom}
+        >
+          {showCustom ? "Hide custom room ID" : "Use a custom room ID"}
+        </button>
+
+        {showCustom && (
+          <div className="home-custom">
+            <div className="home-join">
+              <input
+                value={customRoomId}
+                onChange={(event) => {
+                  setCustomRoomId(event.target.value);
+                  setCustomError("");
+                }}
+                onKeyDown={(event) =>
+                  event.key === "Enter" && createCustomRoom()
+                }
+                placeholder="e.g. team-standup"
+                aria-label="Custom room ID"
+                aria-invalid={Boolean(customError)}
+                autoFocus
+              />
+
+              <button onClick={createCustomRoom}>Create</button>
+            </div>
+
+            {customError && <p className="home-error">{customError}</p>}
+          </div>
+        )}
 
         <div className="home-divider">or</div>
 
