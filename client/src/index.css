@@ -195,6 +195,37 @@ input::placeholder {
   gap: 0.5rem;
 }
 
+.home-input {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.home-paste {
+  display: inline-flex;
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  padding: 0.4rem;
+  line-height: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.home-paste:hover {
+  background: var(--surface-2);
+  color: var(--text-h);
+}
+
+.home-paste:active {
+  transform: translateY(-50%) translateY(1px);
+}
+
+.home-input input {
+  padding-right: 2.75rem;
+}
+
 @media (max-width: 420px) {
   .home-card {
     padding: 1.5rem;
@@ -230,6 +261,22 @@ input::placeholder {
   font-size: 1.25rem;
 }
 
+.room-brand {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.room-brand:hover {
+  opacity: 0.7;
+}
+
+.room-brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
 .room-meta {
   display: flex;
   flex-wrap: wrap;
@@ -238,12 +285,41 @@ input::placeholder {
 }
 
 .room-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--mono);
   font-size: 0.9rem;
-  padding: 0.3rem 0.6rem;
+  font-weight: 500;
+  padding: 0.3rem 0.5rem 0.3rem 0.7rem;
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--text-h);
+}
+
+.room-id svg {
+  flex-shrink: 0;
+  color: var(--text);
+}
+
+.room-id:hover svg {
+  color: var(--text-h);
+}
+
+.room-id-hint {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.room-id.is-copied {
+  background: color-mix(in srgb, var(--ok) 15%, transparent);
+  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+}
+
+.room-id.is-copied svg,
+.room-id.is-copied .room-id-hint {
+  color: var(--ok);
 }
 
 .room-status {
@@ -317,6 +393,17 @@ input::placeholder {
   backdrop-filter: blur(6px);
 }
 
+.room-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.room-controls button svg {
+  flex-shrink: 0;
+}
+
 .room-controls {
   display: flex;
   flex-wrap: wrap;
@@ -341,5 +428,13 @@ input::placeholder {
 
   .room-controls button {
     flex: 1 1 auto;
+  }
+
+  .room-controls button span {
+    display: none;
+  }
+
+  .room-controls button {
+    padding: 0.85rem 1rem;
   }
 }

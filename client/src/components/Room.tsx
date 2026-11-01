@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { socket } from "../socket";
 
 function Room() {
@@ -21,6 +21,8 @@ function Room() {
   const [status, setStatus] = useState("Connecting...");
 
   const [mediaError, setMediaError] = useState("");
+
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!roomId) {
@@ -302,6 +304,22 @@ function Room() {
     navigate("/");
   };
 
+  const copyRoomId = async () => {
+    if (!roomId) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(roomId);
+
+      setCopied(true);
+
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch (error) {
+      console.error("Failed to copy room ID", error);
+    }
+  };
+
   const statusTone =
     status === "Connected"
       ? "is-ok"
@@ -312,10 +330,55 @@ function Room() {
   return (
     <main className="room">
       <header className="room-header">
-        <h1>Video Call</h1>
+        <h1>
+          <Link to="/" className="room-brand" title="Back to home">
+            Video Call
+          </Link>
+        </h1>
 
         <div className="room-meta">
-          <span className="room-id">{roomId}</span>
+          <button
+            type="button"
+            className={`room-id ${copied ? "is-copied" : ""}`}
+            onClick={copyRoomId}
+            title="Copy room ID"
+            aria-label={copied ? "Room ID copied" : "Copy room ID"}
+          >
+            <span>{roomId}</span>
+            {copied ? (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  d="M20 6 9 17l-5-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <rect
+                  x="9"
+                  y="9"
+                  width="11"
+                  height="11"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M5 15V5a2 2 0 0 1 2-2h10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
+            <span className="room-id-hint">{copied ? "Copied" : "Copy"}</span>
+          </button>
           <span className={`room-status ${statusTone}`}>{status}</span>
         </div>
       </header>
@@ -338,19 +401,79 @@ function Room() {
         <button
           className={isMuted ? "btn-active" : ""}
           onClick={toggleMute}
+          aria-pressed={isMuted}
+          aria-label={isMuted ? "Unmute" : "Mute"}
         >
-          {isMuted ? "Unmute" : "Mute"}
+          {isMuted ? (
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V5a3 3 0 0 0-6 0v.6M19 11a7 7 0 0 1-1.6 4.5M5 11a7 7 0 0 0 11.3 5.6M12 18v3M3 3l18 18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M12 15a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3ZM19 11a7 7 0 0 1-14 0M12 18v3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span>{isMuted ? "Unmute" : "Mute"}</span>
         </button>
 
         <button
           className={isCameraOff ? "btn-active" : ""}
           onClick={toggleCamera}
+          aria-pressed={isCameraOff}
+          aria-label={isCameraOff ? "Turn camera on" : "Turn camera off"}
         >
-          {isCameraOff ? "Turn Camera On" : "Turn Camera Off"}
+          {isCameraOff ? (
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m4 0h4a2 2 0 0 1 2 2v2l6-3v10l-2-1M3 3l18 18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M16 9l6-3v12l-6-3M2 7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span>{isCameraOff ? "Turn Camera On" : "Turn Camera Off"}</span>
         </button>
 
-        <button className="btn-danger" onClick={leaveCall}>
-          Leave Call
+        <button
+          className="btn-danger"
+          onClick={leaveCall}
+          aria-label="Leave call"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3 12.5c5.5-5 12.5-5 18 0l-1.6 2.6a1.5 1.5 0 0 1-1.9.5l-2.6-1.3a1.5 1.5 0 0 1-.8-1.6l.2-1.4a10 10 0 0 0-4.6 0l.2 1.4a1.5 1.5 0 0 1-.8 1.6l-2.6 1.3a1.5 1.5 0 0 1-1.9-.5Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>Leave Call</span>
         </button>
       </div>
     </main>
