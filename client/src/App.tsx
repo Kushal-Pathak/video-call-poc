@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -50,7 +50,11 @@ function Home() {
 function Room() {
   const { roomId } = useParams();
 
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+
   const [status, setStatus] = useState("Connecting...");
+
+  const [mediaError, setMediaError] = useState("");
 
   useEffect(() => {
     if (!roomId) {
@@ -89,9 +93,33 @@ function Room() {
     socket.on("peer-joined", handlePeerJoined);
     socket.on("room-full", handleRoomFull);
 
+    let localStream: MediaStream | null = null;
+
+    const startLocalMedia = async () => {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = localStream;
+        }
+      } catch (error) {
+        console.error("Failed to access media", error);
+        setMediaError("Unable to access camera or microphone.");
+      }
+    };
+
+    startLocalMedia();
+
     socket.connect();
 
     return () => {
+      localStream?.getTracks().forEach((track) => {
+        track.stop();
+      });
+
       socket.off("connect", handleConnect);
       socket.off("room-joined", handleRoomJoined);
       socket.off("peer-joined", handlePeerJoined);
@@ -108,6 +136,10 @@ function Room() {
       <p>Room ID: {roomId}</p>
 
       <p>Status: {status}</p>
+
+      {mediaError && <p>{mediaError}</p>}
+
+      <video ref={localVideoRef} autoPlay muted playsInline />
     </main>
   );
 }

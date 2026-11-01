@@ -109,3 +109,10 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+video {
+  width: 100%;
+  max-width: 500px;
+  background: #111;
+  border-radius: 8px;
+}
