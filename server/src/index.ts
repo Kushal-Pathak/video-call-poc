@@ -23,6 +23,18 @@ app.get("/health", (_req, res) => {
 io.on("connection", (socket) => {
   console.log(`Client connected: ${socket.id}`);
 
+  socket.on("offer", ({ roomId, offer }) => {
+    socket.to(roomId).emit("offer", offer);
+  });
+
+  socket.on("answer", ({ roomId, answer }) => {
+    socket.to(roomId).emit("answer", answer);
+  });
+
+  socket.on("ice-candidate", ({ roomId, candidate }) => {
+    socket.to(roomId).emit("ice-candidate", candidate);
+  });
+
   socket.on("join-room", (roomId: string) => {
     const room = io.sockets.adapter.rooms.get(roomId);
 
