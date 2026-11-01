@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import path from "node:path";
 
 const app = express();
 
@@ -12,13 +13,17 @@ const io = new Server(httpServer, {
   },
 });
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
   });
 });
+
+const clientDistPath = path.resolve(__dirname, "../../client/dist");
+
+app.use(express.static(clientDistPath));
 
 io.on("connection", (socket) => {
   console.log(`Client connected: ${socket.id}`);
@@ -70,6 +75,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
   });
+});
+
+app.use((_req, res) => {
+  res.sendFile(path.join(clientDistPath, "index.html"));
 });
 
 httpServer.listen(PORT, () => {
