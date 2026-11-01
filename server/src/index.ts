@@ -59,6 +59,14 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("disconnecting", () => {
+    for (const roomId of socket.rooms) {
+      if (roomId !== socket.id) {
+        socket.to(roomId).emit("peer-left");
+      }
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
   });
