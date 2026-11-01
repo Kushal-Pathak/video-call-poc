@@ -37,6 +37,11 @@ io.on("connection", (socket) => {
 
     console.log(`${socket.id} joined room ${roomId}`);
 
+    socket.emit("room-joined", {
+      roomId,
+      participantCount: participantCount + 1,
+    });
+
     if (participantCount === 1) {
       socket.to(roomId).emit("peer-joined");
     }

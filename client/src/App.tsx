@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -6,6 +6,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import { socket } from "./socket";
 
 function Home() {
   const [roomId, setRoomId] = useState("");
@@ -49,13 +50,64 @@ function Home() {
 function Room() {
   const { roomId } = useParams();
 
+  const [status, setStatus] = useState("Connecting...");
+
+  useEffect(() => {
+    if (!roomId) {
+      return;
+    }
+
+    const handleConnect = () => {
+      setStatus("Connected to server");
+
+      socket.emit("join-room", roomId);
+    };
+
+    const handleRoomJoined = ({
+      participantCount,
+    }: {
+      participantCount: number;
+    }) => {
+      if (participantCount === 2) {
+        setStatus("Peer joined");
+        return;
+      }
+
+      setStatus("Waiting for another participant...");
+    };
+
+    const handlePeerJoined = () => {
+      setStatus("Peer joined");
+    };
+
+    const handleRoomFull = () => {
+      setStatus("Room is full");
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("room-joined", handleRoomJoined);
+    socket.on("peer-joined", handlePeerJoined);
+    socket.on("room-full", handleRoomFull);
+
+    socket.connect();
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("room-joined", handleRoomJoined);
+      socket.off("peer-joined", handlePeerJoined);
+      socket.off("room-full", handleRoomFull);
+
+      socket.disconnect();
+    };
+  }, [roomId]);
+
   return (
     <main>
-      <h1>Room</h1>
+      <h1>Video Call</h1>
 
       <p>Room ID: {roomId}</p>
 
-      <p>Video call will appear here.</p>
+      <p>Status: {status}</p>
     </main>
   );
 }
