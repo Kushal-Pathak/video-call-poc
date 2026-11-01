@@ -41,7 +41,27 @@ function Room() {
       const pc = new RTCPeerConnection({
         iceServers: [
           {
-            urls: "stun:stun.cloudflare.com:3478",
+            urls: "stun:stun.relay.metered.ca:80",
+          },
+          {
+            urls: "turn:global.relay.metered.ca:80",
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
+          },
+          {
+            urls: "turn:global.relay.metered.ca:80?transport=tcp",
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
+          },
+          {
+            urls: "turn:global.relay.metered.ca:443",
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
+          },
+          {
+            urls: "turns:global.relay.metered.ca:443?transport=tcp",
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
           },
         ],
       });
@@ -346,7 +366,12 @@ function Room() {
           >
             <span>{roomId}</span>
             {copied ? (
-              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                aria-hidden="true"
+              >
                 <path
                   d="M20 6 9 17l-5-5"
                   fill="none"
@@ -357,7 +382,12 @@ function Room() {
                 />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                aria-hidden="true"
+              >
                 <rect
                   x="9"
                   y="9"
