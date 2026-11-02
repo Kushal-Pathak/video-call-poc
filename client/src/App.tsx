@@ -9,6 +9,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
       </Routes>
+
+      <footer className="app-footer">Created by Kushal Pathak</footer>
     </BrowserRouter>
   );
 }
